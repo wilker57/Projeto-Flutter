@@ -4,12 +4,22 @@ import 'package:crud/estudante/models/estudante.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-// ignore: unnecessary_import
 import 'package:sqflite/sqlite_api.dart';
 
 class EstudanteService {
   //ADICIONAR O PACOTE DO SQLITE
-  Database? _database;
+  static Database? _database;
+
+  static final EstudanteService _instance = EstudanteService._internal();
+
+  // -- Cria um método construtor para ser utilizado somente
+  //-- dentro desta classe
+
+  EstudanteService._internal();
+
+  //-- fabricando o padrão singleton
+
+  factory EstudanteService() => _instance;
 
   //ADICIONAR UM PACOTE PARA GERENCIAR A PASTA DE ARMAZENAMENTO
 
@@ -30,7 +40,7 @@ class EstudanteService {
     ) 
     ''');
   }
-
+   // a palavra chave "async" me garante processo assíncrono
   Future<int> inserirEstudante(Estudante est) async {
     Database db = await obterDados;
     return await db.insert('estudantes', est.toMap());
