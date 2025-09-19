@@ -38,6 +38,8 @@ dependencies:
   path:
   path_provider: ^2.1.2
   provider: ^6.1.5+1
+  fluttertoast: ^8.2.13
+
 
 dev_dependencies:
   flutter_test:
@@ -91,3 +93,4 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  # add this line to your dependencies

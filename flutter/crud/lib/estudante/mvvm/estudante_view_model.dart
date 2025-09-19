@@ -8,16 +8,27 @@ class EstudanteViewModel extends ChangeNotifier{
   List<Estudante> _estudantes = [];
 
   //obtenção da instância
-  EstudanteService _estudanteService = EstudanteService();
+  final EstudanteService _estudanteService = EstudanteService();
+  List<Estudante> get estudantes => _estudantes;
 
   Future<void> lerEstudantes() async {
     _estudantes = await _estudanteService.getEstudantes();
     notifyListeners();
   }
   
+  EstudanteViewModel(){
+    lerEstudantes();
+  }
    // obtém dados de todoso os estudantes
-  Future<void> adicionarEstudante(Estudante est) async {
-    await _estudanteService.inserirEstudante(est);
-    await lerEstudantes();
+  Future<bool> adicionarEstudante(Estudante est) async {
+    try{
+      await _estudanteService.inserirEstudante(est);
+      await lerEstudantes();
+      return Future.value(true);
+    } catch (e){
+      debugPrint(e.toString());
+      return Future.value(false);
+    }
+
   }
 }

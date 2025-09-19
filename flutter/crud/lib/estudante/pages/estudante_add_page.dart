@@ -1,6 +1,7 @@
 import 'package:crud/estudante/models/estudante.dart';
-import 'package:crud/estudante/mvvm/estudante_view_model.dart' show EstudanteViewModel;
+import 'package:crud/estudante/mvvm/estudante_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class EstudanteAddPage extends StatelessWidget {
@@ -9,95 +10,166 @@ class EstudanteAddPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Estudante est = Estudante();
-
-    // Controladores para os campos do formulário
     TextEditingController matricula = TextEditingController();
     TextEditingController nome = TextEditingController();
-    TextEditingController curso = TextEditingController();
     TextEditingController email = TextEditingController();
+    TextEditingController curso = TextEditingController();
+
+    //variável "formKey" é auxiliar de controle de conteúdo do
+    //formulário onde se encontram os campos textos a serem validados
+    var formKey = GlobalKey<FormState>();
 
     return Consumer<EstudanteViewModel>(
       builder: (context, viewModel, child) {
         return Dialog(
           child: Container(
-            padding: EdgeInsets.all(10),
-            height: 400,
+            padding: EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
+            height: 500,
             decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Color.fromARGB(255, 6, 22, 6),
-                offset: Offset(0.5, 0.5),
-                spreadRadius: 1.5,
-              ),
-            ]
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: matricula,
-                decoration: InputDecoration(
-                  labelText: 'Matrícula',
-                  border: OutlineInputBorder(),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Color.fromARGB(255, 6, 22, 6),
+                  offset: Offset(0.5, 0.5),
+                  spreadRadius: 1.5,
                 ),
-                keyboardType: TextInputType.number,
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                controller: nome,
-                decoration: InputDecoration(
-                  labelText: 'Nome',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                controller: curso,
-                decoration: InputDecoration(
-                  labelText: 'Curso',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                controller: email,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              ],
+            ),
+            child: Form(
+              key: formKey,
+              child: Column(
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    }, 
-                    child: Text("Cancelar")
+                  TextFormField(
+                    validator: (value) => value!.isEmpty
+                        ? 'Campo matrícula é obrigatório!!!!'
+                        : null,
+                    controller: matricula,
+                    decoration: InputDecoration(
+                      label: Text('Matrícula'),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1),
+                      ),
+                    ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      est.nome = nome.text;
-                      est.matricula = int.tryParse(matricula.text);
-                      est.curso = curso.text;
-                      est.email = email.text;
-                      
-                      viewModel.adicionarEstudante(est);
-                      
-                    }, 
-                    child: Text("Salvar")
+                  SizedBox(height: 15),
+                  TextFormField(
+                    validator: (value) =>
+                        value!.isEmpty ? 'Nome não pode ficar vazio' : null,
+                    controller: nome,
+                    decoration: InputDecoration(
+                      label: Text('Nome'),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  TextFormField(
+                    validator: (value) =>
+                        value!.isEmpty ? 'Email não pode ficar vazio' : null,
+
+                    controller: email,
+                    decoration: InputDecoration(
+                      label: Text('Email'),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  TextFormField(
+                    validator: (value) =>
+                        value!.isEmpty ? 'Curso não pode ficar vazio' : null,
+
+                    controller: curso,
+                    decoration: InputDecoration(
+                      label: Text('Curso'),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 25),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        width: 130,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Cancelar"),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 130,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            if (formKey.currentState!.validate()) {
+                              est.nome = nome.text;
+                              est.matricula = int.parse(matricula.text);
+                              est.email = email.text;
+                              est.curso = curso.text;
+                              bool ok = await viewModel.adicionarEstudante(est);
+                              if (ok) {
+                                // ScaffoldMessenger.of(context).showSnackBar(
+                                //   SnackBar(
+                                //     content: Text(
+                                //       'Dados do estudante foram gravados com sucesso',
+                                //     ),
+                                //     backgroundColor: Colors.amberAccent[400],
+                                //     duration: Duration(seconds: 5),
+                                //   ),
+                                // );
+                                myToastDialog(
+                                  msg:
+                                      'Dados do estudante foram gravados com sucesso',
+                                );
+                              } else {
+                                // ScaffoldMessenger.of(context).showSnackBar(
+                                //   SnackBar(
+                                //     content: Text(
+                                //       'Problemas ao gravar dados da cotação',
+                                //     ),
+                                //     backgroundColor: Colors.amberAccent[400],
+                                //     duration: Duration(seconds: 5),
+                                //   ),
+                                // );
+                                myToastDialog(
+                                  msg:
+                                      'Ocorreu problemas na gravação de dados ',
+                                );
+                              }
+                            }
+                          },
+                          child: Text("Salvar"),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
-      );
-  
-    });
+        );
+      },
+    );
   }
+}
+
+Future<bool?> myToastDialog({
+  required String msg,
+  Color backgroundColor = Colors.black,
+  Color textColor = Colors.white,
+}) {
+  return Fluttertoast.showToast(
+    msg: msg,
+    gravity: ToastGravity.BOTTOM,
+    timeInSecForIosWeb: 2,
+    backgroundColor: Colors.black,
+    textColor: Colors.white,
+    fontSize: 14,
+  );
 }
