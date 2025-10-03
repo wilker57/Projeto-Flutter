@@ -59,4 +59,9 @@ class EstudanteService {
       return Estudante.fromMap(lista[i]);
     });
   }
+  
+  Future<int>deletarEstudante(int id)async{
+    Database db = await obterDados;
+    return await db.delete('estudantes', where: 'id = ?', whereArgs: [id]);
+  }
 }

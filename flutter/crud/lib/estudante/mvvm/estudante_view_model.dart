@@ -13,6 +13,7 @@ class EstudanteViewModel extends ChangeNotifier{
 
   Future<void> lerEstudantes() async {
     _estudantes = await _estudanteService.getEstudantes();
+    //notifica todos os objetos que dependeram da lista
     notifyListeners();
   }
   
@@ -31,4 +32,10 @@ class EstudanteViewModel extends ChangeNotifier{
     }
 
   }
-}
+
+    deletarEstudante(int id) async {
+      await _estudanteService.deletarEstudante(id);
+      await lerEstudantes();
+      
+    }
+  }
