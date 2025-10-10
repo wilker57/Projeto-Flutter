@@ -65,3 +65,10 @@ class EstudanteService {
     return await db.delete('estudantes', where: 'id = ?', whereArgs: [id]);
   }
 }
+
+ Future atualizarEstudante (Estudante est) async {
+    Database db = await EstudanteService().obterDados;
+    return await db.update('estudantes', est.toMap(), where: 'id = ?', whereArgs: [est.id]);
+ }
+
+ 

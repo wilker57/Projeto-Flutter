@@ -13,7 +13,7 @@ class EstudanteEditPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     
-  Estudante est = Estudante();
+  //Estudante est = Estudante();
 
     TextEditingController matricula = TextEditingController();
     TextEditingController nome = TextEditingController();

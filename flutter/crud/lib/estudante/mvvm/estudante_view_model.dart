@@ -39,3 +39,26 @@ class EstudanteViewModel extends ChangeNotifier{
       
     }
   }
+
+  /*Future<bool> atualizarEstudante (Estudante est) async {
+    try {
+      await _estudanteService.atualizarEstudante(est);
+      await lerEstudantes();
+      return Future.value(true);
+  }on Exception Catch(e) {
+    debugPrint(e.toString());
+    return Future.value(false);
+  }
+  }
+
+  Future<bool>editarEstudante(Estudante est) async {
+    try {
+      await _estudanteService.atualizarEstudante(est);
+      await lerEstudantes();
+      return Future.value(true);
+    } on Exception catch (e) {
+      debugPrint(e.toString());
+      return Future.value(false);
+    }
+  }
+*/
