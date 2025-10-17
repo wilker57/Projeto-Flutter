@@ -1,10 +1,9 @@
+import 'package:crud/core/custom_textformfield.dart';
 import 'package:crud/estudante/models/estudante.dart';
+import 'package:crud/estudante/mvvm/estudante_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart' show Consumer;
-
-import '../mvvm/estudante_view_model.dart';
-
+import 'package:provider/provider.dart';
 
 class EstudanteEditPage extends StatelessWidget {
   EstudanteEditPage(this.est, {super.key});
@@ -12,20 +11,14 @@ class EstudanteEditPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-  //Estudante est = Estudante();
-
     TextEditingController matricula = TextEditingController();
     TextEditingController nome = TextEditingController();
     TextEditingController email = TextEditingController();
     TextEditingController curso = TextEditingController();
-    //preenchendo os campos textos com os dados do estudante
-    //a ser editado
     matricula.text = est.matricula.toString();
     nome.text = est.nome!;
     email.text = est.email!;
     curso.text = est.curso!;
-
     //variável "formKey" é auxiliar de controle de conteúdo do
     //formulário onde se encontram os campos textos a serem validados
     var formKey = GlobalKey<FormState>();
@@ -34,73 +27,37 @@ class EstudanteEditPage extends StatelessWidget {
       builder: (context, viewModel, child) {
         return SafeArea(
           child: Scaffold(
-            body: Container(
-              padding: EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 10),
-              height: 500,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.fromARGB(255, 6, 22, 6),
-                    offset: Offset(0.5, 0.5),
-                    spreadRadius: 1.5,
-                  ),
-                ],
-              ),
-              child: Form(
-                key: formKey,
+            body: Form(
+              key: formKey,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 30.0,
+                  horizontal: 15,
+                ),
                 child: Column(
                   children: [
-                    TextFormField(
-                      validator: (value) => value!.isEmpty
-                          ? 'Campo matrícula é obrigatório!!!!'
-                          : null,
+                    CustomTextFormField(
+                      label: Text('Matrícula'),
+                      validacao: 'A matrícula é obrigatória!!!',
                       controller: matricula,
-                      decoration: InputDecoration(
-                        label: Text('Matrícula'),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1),
-                        ),
-                      ),
                     ),
                     SizedBox(height: 15),
-                    TextFormField(
-                      validator: (value) =>
-                          value!.isEmpty ? 'Nome não pode ficar vazio' : null,
+                    CustomTextFormField(
+                      label: Text('Nome'),
+                      validacao: 'O nome não pode ficar vazio!!!',
                       controller: nome,
-                      decoration: InputDecoration(
-                        label: Text('Nome'),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1),
-                        ),
-                      ),
                     ),
                     SizedBox(height: 15),
-                    TextFormField(
-                      validator: (value) =>
-                          value!.isEmpty ? 'Email não pode ficar vazio' : null,
-            
+                    CustomTextFormField(
+                      label: Text('Email'),
+                      validacao: 'O email não pode ficar vazio!!!',
                       controller: email,
-                      decoration: InputDecoration(
-                        label: Text('Email'),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1),
-                        ),
-                      ),
                     ),
                     SizedBox(height: 15),
-                    TextFormField(
-                      validator: (value) =>
-                          value!.isEmpty ? 'Curso não pode ficar vazio' : null,
-            
+                    CustomTextFormField(
+                      label: Text('Curso'),
+                      validacao: 'O curso não pode ficar vazio!!!',
                       controller: curso,
-                      decoration: InputDecoration(
-                        label: Text('Curso'),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1),
-                        ),
-                      ),
                     ),
                     SizedBox(height: 25),
                     Row(
@@ -124,7 +81,9 @@ class EstudanteEditPage extends StatelessWidget {
                                 est.matricula = int.parse(matricula.text);
                                 est.email = email.text;
                                 est.curso = curso.text;
-                                bool ok = await viewModel.adicionarEstudante(est);
+                                bool ok = await viewModel.atualizarEstudante(
+                                  est,
+                                );
                                 if (ok) {
                                   // ScaffoldMessenger.of(context).showSnackBar(
                                   //   SnackBar(
@@ -136,9 +95,11 @@ class EstudanteEditPage extends StatelessWidget {
                                   //   ),
                                   // );
                                   myToastDialog(
+                                    backgroundColor: Colors.green,
                                     msg:
                                         'Dados do estudante foram gravados com sucesso',
                                   );
+                                  Navigator.of(context).pop();
                                 } else {
                                   // ScaffoldMessenger.of(context).showSnackBar(
                                   //   SnackBar(
@@ -157,7 +118,6 @@ class EstudanteEditPage extends StatelessWidget {
                               }
                             },
                             child: Text("Salvar"),
-                            
                           ),
                         ),
                       ],

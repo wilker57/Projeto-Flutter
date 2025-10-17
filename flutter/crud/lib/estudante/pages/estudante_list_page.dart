@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:crud/core/tema_provider.dart';
 import 'package:crud/estudante/mvvm/estudante_view_model.dart';
 import 'package:crud/estudante/pages/estudante_add_page.dart';
 import 'package:crud/estudante/pages/estudante_edit_page.dart';
@@ -9,7 +12,30 @@ class EstudanteListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final temaProvider = Provider.of<TemaProvider>(context);
+
     return Scaffold(
+      appBar: AppBar(),
+      drawer: Drawer(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Text('CRUD'),
+              Switch(
+                value: temaProvider.isDark,
+                onChanged: (value) {
+                  if (value) {
+                    temaProvider.trocarTema();
+                  } else {
+                    temaProvider.trocarTema();
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
       body: Consumer<EstudanteViewModel>(
         builder: (context, viewModel, child) {
           if (viewModel.estudantes.isEmpty) {
@@ -19,33 +45,58 @@ class EstudanteListPage extends StatelessWidget {
             itemCount: viewModel.estudantes.length,
             itemBuilder: (context, index) {
               final estudante = viewModel.estudantes[index];
-              return ListTile(
-                title: Text('${estudante.nome}'),
-                subtitle: Text('${estudante.matricula}'),
-                trailing: SizedBox(
-                  width: 96,
-                    child: Row( 
-                      children: [
-                      IconButton(
-                        icon: Icon(Icons.delete, color: const Color.fromARGB(255, 252, 19, 2)), 
-                        onPressed: () {
-                          // viewModel.deletarEstudante(estudante.id!);
-                          _showDialogConfirmacao(context, viewModel, estudante.id!);
-                        },
+              return Card(
+                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ClipOval(
+                      child: Image.file(
+                        File(estudante.imagem!),
+                        width: 70,
+                        height: 70,
                       ),
-                      IconButton(
-                    icon: Icon(Icons.edit, color: Colors.black), 
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => EstudanteEditPage(viewModel.estudantes[index]),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${estudante.nome}',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                            Text('${estudante.matricula}'),
+                          ],
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red),
+                      onPressed: () {
+                        // viewModel.deletarEstudante(estudante.id!);
+                        _showDialogConfirmacao(
+                          context,
+                          viewModel,
+                          estudante.id!,
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.edit, color: Colors.green),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                EstudanteEditPage(viewModel.estudantes[index]),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
-                )
               );
             },
           );
@@ -94,8 +145,9 @@ class EstudanteListPage extends StatelessWidget {
             TextButton(
               child: const Text('Delete'),
               onPressed: () async {
-                Navigator.of(context).pop();
                 await viewModel.deletarEstudante(id);
+
+                Navigator.of(context).pop();
               },
             ),
           ],
